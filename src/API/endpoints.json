@@ -6,6 +6,9 @@
     "url": "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=inr"
   },
   "fetch_bitcoin_address": {
-    "url": "http://192.168.67.88:3000/getAddressFromPrivateKey/?privatekey="
+    "url": "https://cryptoxpress-backend.onrender.com/getAddressFromPrivateKey/?privatekey="
+  },
+  "fetch_bitcoin_balance": {
+    "url": "https://cryptoxpress-backend.onrender.com/getBalance/?address="
   }
 }

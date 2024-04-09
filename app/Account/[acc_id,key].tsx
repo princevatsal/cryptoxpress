@@ -6,6 +6,7 @@ import { getBalance, sendMatic } from "../../src/Utils/ether";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../src/state/store";
 import Trans from "../../src/components/atomic/Trans";
+import { getBitcoinBalance } from "../../src/API/Resources";
 const Account = observer(() => {
   const { acc_id, key } = useLocalSearchParams();
   const { network, addPolygonTrans, polygonTrans, bitcoinTrans } = useStore();
@@ -17,6 +18,9 @@ const Account = observer(() => {
     const fetchBalance = async () => {
       if (network === "polygon") {
         const balance = await getBalance(acc_id);
+        setBalance(balance);
+      } else {
+        const balance = await getBitcoinBalance(acc_id);
         setBalance(balance);
       }
     };
@@ -68,47 +72,51 @@ const Account = observer(() => {
             {balance ?? "..."} {network === "polygon" ? "MATIC" : "BTC"}
           </Text>
         </Text>
-        <Text style={styles.sendTxt}>
-          Send {network === "polygon" ? "MATIC" : "BTC"}
-        </Text>
-        <TextInput
-          style={styles.address}
-          placeholder="Enter Reciever address"
-          value={receiverAddress}
-          onChangeText={setReceiverAddress}
-        />
-        <View style={styles.wrapper}>
-          <TextInput
-            style={styles.amount}
-            keyboardType="numeric"
-            placeholder="Amount"
-            value={amount}
-            onChangeText={(e) => {
-              setAmount(e);
-            }}
-          />
-          <AppButton
-            title={loading ? "....." : "Send"}
-            btnStyles={styles.send}
-            textStyles={styles.sendTxtBtn}
-            onPress={sendToken}
-            leftIcon={null}
-          />
-        </View>
-        <Text style={styles.transTxt}>Transactions</Text>
-        <View style={styles.flatListCover}>
-          <FlatList
-            data={network === "polygon" ? polygonTrans : bitcoinTrans}
-            renderItem={(item) => (
-              <Trans
-                from={item.item.from}
-                to={item.item.to}
-                hash={item.item.hash}
-                amount={item.item.amount}
+        {network === "polygon" && (
+          <>
+            <Text style={styles.sendTxt}>
+              Send {network === "polygon" ? "MATIC" : "BTC"}
+            </Text>
+            <TextInput
+              style={styles.address}
+              placeholder="Enter Reciever address"
+              value={receiverAddress}
+              onChangeText={setReceiverAddress}
+            />
+            <View style={styles.wrapper}>
+              <TextInput
+                style={styles.amount}
+                keyboardType="numeric"
+                placeholder="Amount"
+                value={amount}
+                onChangeText={(e) => {
+                  setAmount(e);
+                }}
               />
-            )}
-          />
-        </View>
+              <AppButton
+                title={loading ? "....." : "Send"}
+                btnStyles={styles.send}
+                textStyles={styles.sendTxtBtn}
+                onPress={sendToken}
+                leftIcon={null}
+              />
+            </View>
+            <Text style={styles.transTxt}>Transactions</Text>
+            <View style={styles.flatListCover}>
+              <FlatList
+                data={network === "polygon" ? polygonTrans : bitcoinTrans}
+                renderItem={(item) => (
+                  <Trans
+                    from={item.item.from}
+                    to={item.item.to}
+                    hash={item.item.hash}
+                    amount={item.item.amount}
+                  />
+                )}
+              />
+            </View>
+          </>
+        )}
       </View>
     </View>
   );

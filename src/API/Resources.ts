@@ -35,4 +35,20 @@ const getBitcoinAddressFromKey = async (key) => {
   }
 };
 
-export { fetchBitcoinPriceRes, fetchPolygonPriceRes, getBitcoinAddressFromKey };
+const getBitcoinBalance = async (address) => {
+  try {
+    const resp = await axios.get(endPoints.fetch_bitcoin_balance.url + address);
+    const addr = resp?.data?.balance;
+    return addr;
+  } catch (err) {
+    console.log(err?.response, "err");
+    return null;
+  }
+};
+
+export {
+  fetchBitcoinPriceRes,
+  fetchPolygonPriceRes,
+  getBitcoinAddressFromKey,
+  getBitcoinBalance,
+};
