@@ -1,0 +1,11 @@
+{
+  "fetch_bitcoin_price": {
+    "url": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=inr"
+  },
+  "fetch_usdt_price": {
+    "url": "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=inr"
+  },
+  "fetch_bitcoin_address": {
+    "url": "http://192.168.67.88:3000/getAddressFromPrivateKey/?privatekey="
+  }
+}
