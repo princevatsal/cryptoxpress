@@ -39,7 +39,8 @@ const Account = observer(() => {
           response.tx.from,
           response.tx.to,
           response.tx.hash,
-          amount
+          amount,
+          response.tx.maxFeePerGas
         );
         setAmount("0");
         setReceiverAddress("");
@@ -69,13 +70,13 @@ const Account = observer(() => {
         <Text style={styles.balance}>
           Balance:-{" "}
           <Text style={styles.value}>
-            {balance ?? "..."} {network === "polygon" ? "MATIC" : "BTC"}
+            {balance ?? "..."} {network === "polygon" ? "dUSDT" : "BTC"}
           </Text>
         </Text>
         {network === "polygon" && (
           <>
             <Text style={styles.sendTxt}>
-              Send {network === "polygon" ? "MATIC" : "BTC"}
+              Send {network === "polygon" ? "dUSDT" : "BTC"}
             </Text>
             <TextInput
               style={styles.address}
@@ -111,6 +112,7 @@ const Account = observer(() => {
                     to={item.item.to}
                     hash={item.item.hash}
                     amount={item.item.amount}
+                    maxFeePerGas={item.item.maxFeePerGas}
                   />
                 )}
               />

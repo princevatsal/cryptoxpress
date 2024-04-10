@@ -1,13 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-export default function Trans({ from, to, hash, amount }) {
+export default function Trans({ from, to, hash, amount, maxFeePerGas }) {
   return (
     <View style={styles.container}>
       <Text style={styles.line}>From: {from}</Text>
       <Text style={styles.line}>To: {to}</Text>
       <Text style={styles.line}>hash: {hash}</Text>
       <Text style={styles.line}>amount: {amount}</Text>
+      <Text style={styles.line}>gas fee: {maxFeePerGas}</Text>
     </View>
   );
 }

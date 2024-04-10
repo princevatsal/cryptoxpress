@@ -48,8 +48,8 @@ class Store {
   async addPolygonAddress(address, key) {
     this.polygonAddresses.push({ address, key });
   }
-  async addPolygonTrans(from, to, hash, amount) {
-    this.polygonTrans.push({ from, to, hash, amount });
+  async addPolygonTrans(from, to, hash, amount, maxFeePerGas) {
+    this.polygonTrans.push({ from, to, hash, amount, maxFeePerGas });
   }
   async addBitcoinTrans(from, to, hash, amount) {
     this.bitcoinTrans.push({ from, to, hash, amount });
