@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, TextInput, Button, Alert } from "react-native";
 import "@ethersproject/shims";
+import "../shim";
 import Switch from "../src/components/atomic/Switch";
 import LivePrice from "../src/components/moleculer/LivePrice";
 import ImportWallet from "../src/components/moleculer/ImportWallet";
 import AccountList from "../src/components/moleculer/AccountList";
-
 const App = () => {
   return (
     <View style={styles.container}>
