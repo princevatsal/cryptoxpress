@@ -12,18 +12,15 @@ const Account = observer(() => {
     network,
     polygonTrans,
     bitcoinTrans,
-    receiverAddress,
-    amount,
-    sendingTokens,
+
     addPolygonTrans,
     addBitcoinTrans,
     balance,
     updateBalance,
-    setReceiverAddress,
-    setAmount,
-    setSendingTokens,
   } = useStore();
-
+  const [receiverAddress, setReceiverAddress] = useState("");
+  const [amount, setAmount] = useState("");
+  const [sendingTokens, setSendingTokens] = useState(false);
   useEffect(() => {
     updateBalance(acc_id);
   }, [acc_id]);
@@ -40,6 +37,7 @@ const Account = observer(() => {
     }
     return true;
   };
+
   const addTransaction = (response) => {
     if (network === "polygon")
       addPolygonTrans(

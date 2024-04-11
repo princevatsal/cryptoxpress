@@ -14,9 +14,6 @@ class Store {
   bitcoinPrice = null;
   usdtPrice = null;
   balance = null;
-  receiverAddress = "";
-  amount = "";
-  sendingTokens = false;
   bitcoinAddresses = [];
   polygonAddresses = [];
   polygonTrans = [];
@@ -34,9 +31,6 @@ class Store {
       bitcoinTrans: observable,
       updatingTnxStatus: observable,
       balance: observable,
-      receiverAddress: observable,
-      amount: observable,
-      sendingTokens: observable,
       toggleNetwork: action.bound,
       fetchBitcoinPrice: action.bound,
       fetchPolygonPrice: action.bound,
@@ -48,9 +42,6 @@ class Store {
       updateBTCTnxStatus: action.bound,
       updatePolygonTnxStatus: action.bound,
       updateBalance: action.bound,
-      setReceiverAddress: action.bound,
-      setAmount: action.bound,
-      setSendingTokens: action.bound,
     });
   }
 
@@ -96,22 +87,15 @@ class Store {
     this.bitcoinTrans.push({ from, to, hash, amount, maxFeePerGas, status });
   }
   async updateBalance(acc_id) {
+    console.log("Updating balance of ", acc_id);
     let balance = null;
     if (this.network === "polygon") {
       balance = await getUSDTBalance(acc_id);
+      console.log("balance", balance);
     } else {
       balance = await getBTCBalance(acc_id);
     }
     this.balance = balance;
-  }
-  async setReceiverAddress(address) {
-    this.receiverAddress = address;
-  }
-  async setAmount(amount) {
-    this.amount = amount;
-  }
-  async setSendingTokens(state) {
-    this.setSendingTokens = state;
   }
 }
 
