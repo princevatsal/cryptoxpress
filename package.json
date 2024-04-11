@@ -42,7 +42,8 @@
     "vm-browserify": "^0.0.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "rn-nodeify": "^10.3.0"
   },
   "private": true,
   "react-native": {
