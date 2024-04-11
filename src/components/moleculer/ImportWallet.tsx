@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useStore } from "../../state/store";
 import { observer } from "mobx-react-lite";
 import AppButton from "./AppButton";
-import { getBitcoinAddressFromKey } from "../../API/Resources";
-import { getAddressFromKey } from "../../Utils/ether";
+import { getBitcoinAddressFromPrivateKey } from "../../Utils/ether";
+import { getPolygonAddressFromKey } from "../../Utils/ether";
 
 const ImportWallet = observer(() => {
   const [privateKey, setPrivateKey] = useState("");
@@ -22,29 +22,30 @@ const ImportWallet = observer(() => {
       alert("Please provide a private key");
       return;
     }
-    const address = await getBitcoinAddressFromKey(privateKey);
-    if (!address || address === "invalid_key") {
+    const address = await getBitcoinAddressFromPrivateKey(privateKey);
+    if (!address) {
       alert("Invalid key");
       return;
     }
-    if (bitcoinAddresses.findIndex((add) => add == address) != -1) {
+    if (bitcoinAddresses.findIndex((add) => add.address == address) != -1) {
       alert("Account already exist");
       return;
     }
     addBitcoinAddress(address, privateKey);
     setPrivateKey("");
   };
+
   const importPolygonWallet = async () => {
     if (privateKey.trim() == "") {
       alert("Please enter private key");
       return;
     }
-    const address = getAddressFromKey(privateKey);
+    const address = getPolygonAddressFromKey(privateKey);
     if (!address || address.trim() === "") {
       alert("please enter a valid address");
       return;
     }
-    if (polygonAddresses.findIndex((add) => add == address) != -1) {
+    if (polygonAddresses.findIndex((add) => add.address == address) != -1) {
       alert("Account already exist");
       return;
     }

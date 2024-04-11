@@ -6,7 +6,6 @@ import Acc from "../atomic/Acc";
 
 const AccountList = observer(() => {
   const { bitcoinAddresses, polygonAddresses, network } = useStore();
-  console.log(bitcoinAddresses);
   return (
     <View style={styles.container}>
       <Text style={styles.text}>

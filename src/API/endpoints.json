@@ -5,10 +5,25 @@
   "fetch_usdt_price": {
     "url": "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=inr"
   },
-  "fetch_bitcoin_address": {
-    "url": "https://cryptoxpress-backend.onrender.com/getAddressFromPrivateKey/?privatekey="
-  },
   "fetch_bitcoin_balance": {
-    "url": "https://cryptoxpress-backend.onrender.com/getBalance/?address="
+    "url": "https://api.blockcypher.com/v1/btc/test3/addrs/${address}/balance?token=a8fb0dbfc6094d44b2bdc0cd723c13a9"
+  },
+  "fetch_tx_details": {
+    "url": "https://api.blockcypher.com/v1/btc/test3/txs/${tx}"
+  },
+  "explorer_link": {
+    "url": "https://live.blockcypher.com/btc-testnet/tx/${tx}/"
+  },
+  "explorer_link_polygon": {
+    "url": "https://mumbai.polygonscan.com/tx/${tx}"
+  },
+  "broadcast_bitcoin_tx": {
+    "url": "https://blockstream.info/testnet/api/tx"
+  },
+  "fetch_utox": {
+    "url": "https://blockstream.info/testnet/api/address/${address}/utxo"
+  },
+  "fetch_tx_hash": {
+    "url": "https://blockstream.info/testnet/api/tx/${txId}/hex"
   }
 }

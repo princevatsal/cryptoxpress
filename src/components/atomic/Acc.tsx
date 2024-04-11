@@ -3,7 +3,6 @@ import React from "react";
 import { Send } from "../../icons/appIcon";
 import { Link } from "expo-router";
 export default function Acc({ acc, index, onPress = () => {} }) {
-  console.log(acc);
   return (
     <Link
       href={{

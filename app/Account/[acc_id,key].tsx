@@ -2,65 +2,89 @@ import { StyleSheet, Text, View, TextInput, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import AppButton from "../../src/components/moleculer/AppButton";
-import { getBalance, sendMatic } from "../../src/Utils/ether";
+import { sendBTC, sendUSDT } from "../../src/Utils/ether";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../src/state/store";
 import Trans from "../../src/components/atomic/Trans";
-import { getBitcoinBalance } from "../../src/API/Resources";
 const Account = observer(() => {
   const { acc_id, key } = useLocalSearchParams();
-  const { network, addPolygonTrans, polygonTrans, bitcoinTrans } = useStore();
-  const [receiverAddress, setReceiverAddress] = useState("");
-  const [amount, setAmount] = useState("0");
-  const [balance, setBalance] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const {
+    network,
+    polygonTrans,
+    bitcoinTrans,
+    receiverAddress,
+    amount,
+    sendingTokens,
+    addPolygonTrans,
+    addBitcoinTrans,
+    balance,
+    updateBalance,
+    setReceiverAddress,
+    setAmount,
+    setSendingTokens,
+  } = useStore();
+
   useEffect(() => {
-    const fetchBalance = async () => {
-      if (network === "polygon") {
-        const balance = await getBalance(acc_id);
-        setBalance(balance);
-      } else {
-        const balance = await getBitcoinBalance(acc_id);
-        setBalance(balance);
-      }
-    };
-    fetchBalance();
+    updateBalance(acc_id);
   }, [acc_id]);
-  const sendMAticCoin = async () => {
-    try {
-      const response = await sendMatic(key, receiverAddress, amount);
-      setLoading(false);
-      if (response.status === "error") {
-        alert(response.msg);
-      }
-      if (response.status === "success") {
-        alert("Sent");
-        addPolygonTrans(
-          response.tx.from,
-          response.tx.to,
-          response.tx.hash,
-          amount,
-          response.tx.maxFeePerGas
-        );
-        setAmount("0");
-        setReceiverAddress("");
-      }
-    } catch {}
-  };
-  const sendToken = async () => {
-    if (loading) return;
+
+  const validators = () => {
+    if (sendingTokens) return;
     if (receiverAddress.trim() === "") {
       alert("Please enter a reciever address");
-      return;
+      return false;
     }
-    if (amount > balance || !amount) {
+    if (amount.trim() == "" || Number(amount) > balance || !amount) {
       alert("Please enter a amount less than balance");
+      return false;
+    }
+    return true;
+  };
+  const addTransaction = (response) => {
+    if (network === "polygon")
+      addPolygonTrans(
+        response.tx.from,
+        response.tx.to,
+        response.tx.hash,
+        amount + " dUSDT",
+        response.tx.maxFeePerGas,
+        response.tx.status
+      );
+    else
+      addBitcoinTrans(
+        response.tx.from,
+        response.tx.to,
+        response.tx.hash,
+        amount + " Satoshi",
+        response.tx.maxFeePerGas,
+        response.tx.status
+      );
+  };
+  const sendToken = async () => {
+    if (!validators()) {
       return;
     }
+    setSendingTokens(true);
+    let response;
     if (network === "polygon") {
-      setLoading(true);
-      await sendMAticCoin();
-      setLoading(false);
+      response = await sendUSDT(key, receiverAddress, amount);
+    } else {
+      response = await sendBTC(acc_id, key, receiverAddress, Number(amount));
+    }
+
+    if (response?.status === "error") {
+      alert(response?.msg);
+      return;
+    }
+    if (response?.status === "success") {
+      alert("Sent");
+      addTransaction(response);
+      setAmount("0");
+      setReceiverAddress("");
+      setTimeout(() => {
+        updateBalance(acc_id);
+        setSendingTokens(false);
+      }, 4000);
     }
   };
   return (
@@ -70,55 +94,54 @@ const Account = observer(() => {
         <Text style={styles.balance}>
           Balance:-{" "}
           <Text style={styles.value}>
-            {balance ?? "..."} {network === "polygon" ? "dUSDT" : "BTC"}
+            {balance ?? "..."} {network === "polygon" ? "dUSDT" : "Satoshi"}
           </Text>
         </Text>
-        {network === "polygon" && (
-          <>
-            <Text style={styles.sendTxt}>
-              Send {network === "polygon" ? "dUSDT" : "BTC"}
-            </Text>
+        <>
+          <Text style={styles.sendTxt}>
+            Send {network === "polygon" ? "dUSDT" : "BTC"}
+          </Text>
+          <TextInput
+            style={styles.address}
+            placeholder="Enter Reciever address"
+            value={receiverAddress}
+            onChangeText={setReceiverAddress}
+          />
+          <View style={styles.wrapper}>
             <TextInput
-              style={styles.address}
-              placeholder="Enter Reciever address"
-              value={receiverAddress}
-              onChangeText={setReceiverAddress}
+              style={styles.amount}
+              keyboardType="numeric"
+              placeholder={network === "polygon" ? "dUSDT" : "Satoshi"}
+              value={amount}
+              onChangeText={(e) => {
+                setAmount(e);
+              }}
             />
-            <View style={styles.wrapper}>
-              <TextInput
-                style={styles.amount}
-                keyboardType="numeric"
-                placeholder="Amount"
-                value={amount}
-                onChangeText={(e) => {
-                  setAmount(e);
-                }}
-              />
-              <AppButton
-                title={loading ? "....." : "Send"}
-                btnStyles={styles.send}
-                textStyles={styles.sendTxtBtn}
-                onPress={sendToken}
-                leftIcon={null}
-              />
-            </View>
-            <Text style={styles.transTxt}>Transactions</Text>
-            <View style={styles.flatListCover}>
-              <FlatList
-                data={network === "polygon" ? polygonTrans : bitcoinTrans}
-                renderItem={(item) => (
-                  <Trans
-                    from={item.item.from}
-                    to={item.item.to}
-                    hash={item.item.hash}
-                    amount={item.item.amount}
-                    maxFeePerGas={item.item.maxFeePerGas}
-                  />
-                )}
-              />
-            </View>
-          </>
-        )}
+            <AppButton
+              title={sendingTokens ? "....." : "Send"}
+              btnStyles={styles.send}
+              textStyles={styles.sendTxtBtn}
+              onPress={sendToken}
+              leftIcon={null}
+            />
+          </View>
+          <Text style={styles.transTxt}>Transactions</Text>
+          <View style={styles.flatListCover}>
+            <FlatList
+              data={network === "polygon" ? polygonTrans : bitcoinTrans}
+              renderItem={(item) => (
+                <Trans
+                  from={item.item.from}
+                  to={item.item.to}
+                  hash={item.item.hash}
+                  amount={item.item.amount}
+                  maxFeePerGas={item.item.maxFeePerGas}
+                  status={item.item.status}
+                />
+              )}
+            />
+          </View>
+        </>
       </View>
     </View>
   );
