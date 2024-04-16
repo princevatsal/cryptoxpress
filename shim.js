@@ -1,3 +1,25 @@
+require("node-libs-expo/globals");
+import * as Random from "expo-random";
+// implement window.getRandomValues(), for packages that rely on it
+if (typeof window === "object") {
+  if (!window.crypto) window.crypto = {};
+  if (!window.crypto.getRandomValues) {
+    window.crypto.getRandomValues = async function getRandomValues(arr) {
+      let orig = arr;
+      if (arr.byteLength != arr.length) {
+        // Get access to the underlying raw bytes
+        arr = new Uint8Array(arr.buffer);
+      }
+      const bytes = await Random.getRandomBytesAsync(arr.length);
+      for (var i = 0; i < bytes.length; i++) {
+        arr[i] = bytes[i];
+      }
+
+      return orig;
+    };
+  }
+}
+
 if (typeof __dirname === "undefined") global.__dirname = "/";
 if (typeof __filename === "undefined") global.__filename = "";
 if (typeof process === "undefined") {
@@ -20,7 +42,3 @@ process.env["NODE_ENV"] = isDev ? "development" : "production";
 if (typeof localStorage !== "undefined") {
   localStorage.debug = isDev ? "*" : "";
 }
-
-// If using the crypto shim, uncomment the following line to ensure
-// crypto is loaded first, so it can populate global.crypto
-// require("crypto");
