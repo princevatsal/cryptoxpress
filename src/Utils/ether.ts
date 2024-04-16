@@ -104,12 +104,11 @@ const sendBTC = async (from_address, key, to_address, amount) => {
         from: from_address,
         hash: txId,
         to: to_address,
-        maxFeePerGas: fee + " Satoshi",
+        maxFeePerGas: fee / 100000000 + " BTC",
         status: "pending",
       },
     };
   } catch (err) {
-    console.log("err", err);
     return { status: "error", msg: "Some error occured" };
   }
 };

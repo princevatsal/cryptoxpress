@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, TextInput, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  FlatList,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import React, { useCallback, useState } from "react";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import AppButton from "../../src/components/moleculer/AppButton";
@@ -6,6 +14,7 @@ import { sendBTC, sendUSDT } from "../../src/Utils/ether";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../src/state/store";
 import Trans from "../../src/components/atomic/Trans";
+import { Reload } from "../../src/icons/appIcon";
 const Account = observer(() => {
   const { acc_id, key } = useLocalSearchParams();
   const {
@@ -23,12 +32,11 @@ const Account = observer(() => {
   const [amount, setAmount] = useState("");
   const [sendingTokens, setSendingTokens] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      setBalance();
-      updateBalance(acc_id);
-    }, [])
-  );
+  const updateBal = () => {
+    setBalance();
+    updateBalance(acc_id);
+  };
+  useFocusEffect(useCallback(updateBal, []));
 
   const validators = () => {
     if (sendingTokens) return;
@@ -58,7 +66,7 @@ const Account = observer(() => {
         response.tx.from,
         response.tx.to,
         response.tx.hash,
-        amount + " Satoshi",
+        amount + " BTC",
         response.tx.maxFeePerGas,
         response.tx.status
       );
@@ -74,9 +82,9 @@ const Account = observer(() => {
     } else {
       response = await sendBTC(acc_id, key, receiverAddress, Number(amount));
     }
-
     if (response?.status === "error") {
       alert(response?.msg);
+      setSendingTokens(false);
       return;
     }
     if (response?.status === "success") {
@@ -94,12 +102,15 @@ const Account = observer(() => {
     <View style={styles.container}>
       <Text style={styles.heading}>Account: {acc_id}</Text>
       <View style={styles.content}>
-        <Text style={styles.balance}>
-          Balance:-{" "}
+        <View style={styles.balance}>
+          <Text style={[styles.value, { color: "#000" }]}>Balance:- </Text>
           <Text style={styles.value}>
-            {balance ?? "..."} {network === "polygon" ? "dUSDT" : "Satoshi"}
+            {balance ?? "..."} {network === "polygon" ? "dUSDT" : "BTC"}
           </Text>
-        </Text>
+          <TouchableOpacity onPress={updateBal} style={styles.reloadCover}>
+            <Image source={Reload} style={styles.reload} />
+          </TouchableOpacity>
+        </View>
         <>
           <Text style={styles.sendTxt}>
             Send {network === "polygon" ? "dUSDT" : "BTC"}
@@ -114,7 +125,7 @@ const Account = observer(() => {
             <TextInput
               style={styles.amount}
               keyboardType="numeric"
-              placeholder={network === "polygon" ? "dUSDT" : "Satoshi"}
+              placeholder={network === "polygon" ? "dUSDT" : "BTC"}
               value={amount}
               onChangeText={(e) => {
                 setAmount(e);
@@ -167,12 +178,16 @@ const styles = StyleSheet.create({
   },
   balance: {
     fontWeight: "500",
-    fontSize: 20,
+
     textAlign: "center",
     marginTop: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
   },
   value: {
     color: "#16a085",
+    fontSize: 20,
   },
   sendTxt: {
     marginTop: 40,
@@ -220,5 +235,14 @@ const styles = StyleSheet.create({
   flatListCover: {
     height: "55%",
     width: "100%",
+  },
+  reload: {
+    height: 20,
+    width: 20,
+  },
+  reloadCover: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
   },
 });

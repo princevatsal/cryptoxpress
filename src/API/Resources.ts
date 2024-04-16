@@ -40,7 +40,7 @@ const getBTCBalance = async (address) => {
     const response = await axios.get(
       endPoints.fetch_bitcoin_balance.url.replace("${address}", address)
     );
-    return response.data.final_balance;
+    return response.data.final_balance / 100000000;
   } catch (error) {
     return null;
   }
