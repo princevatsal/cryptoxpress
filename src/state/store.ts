@@ -42,11 +42,15 @@ class Store {
       updateBTCTnxStatus: action.bound,
       updatePolygonTnxStatus: action.bound,
       updateBalance: action.bound,
+      setBalance: action.bound,
     });
   }
 
   toggleNetwork() {
     this.network = this.network === "polygon" ? "bitcoin" : "polygon";
+  }
+  setBalance() {
+    this.balance = null;
   }
   setUpdatingTnxStatus() {
     this.updatingTnxStatus = true;

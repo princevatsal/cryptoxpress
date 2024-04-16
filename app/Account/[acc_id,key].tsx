@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TextInput, FlatList } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import React, { useCallback, useState } from "react";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import AppButton from "../../src/components/moleculer/AppButton";
 import { sendBTC, sendUSDT } from "../../src/Utils/ether";
 import { observer } from "mobx-react-lite";
@@ -17,13 +17,18 @@ const Account = observer(() => {
     addBitcoinTrans,
     balance,
     updateBalance,
+    setBalance,
   } = useStore();
   const [receiverAddress, setReceiverAddress] = useState("");
   const [amount, setAmount] = useState("");
   const [sendingTokens, setSendingTokens] = useState(false);
-  useEffect(() => {
-    updateBalance(acc_id);
-  }, [acc_id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setBalance();
+      updateBalance(acc_id);
+    }, [])
+  );
 
   const validators = () => {
     if (sendingTokens) return;
